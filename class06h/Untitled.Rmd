@@ -1,0 +1,54 @@
+---
+title: "Class 6 Homework: Write a Function"
+author: 'Shitian Li (PID: A13294481)'
+date: "10/17/2021"
+output: pdf_document
+---
+
+In this assignment, we aim to turn the following snippet code in to a function. 
+```{r eval=FALSE}
+library(bio3d)
+s1 <- read.pdb("4AKE")  # kinase with drug
+s2 <- read.pdb("1AKE")  # kinase no drug
+s3 <- read.pdb("1E4Y")  # kinase with drug
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s3, chain="A", elety="CA")
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+---
+
+## Function notes: 
+
+**Input**: This function will take three inputs: PDB code of enzyme with drug, PDB code of enzyme without drug, and PDB code of mutated enzyme.  
+
+**Utility**: This function will pull corresponding data from PDB automatically, and then clean up the data by focusing on side chain A of the protein. Finally, the function will look at the B factor of the side chain and plot it. 
+
+**Output**: This function will return three plots. 
+
+## Function:
+
+```{r}
+plotBfactor <- function(noDrug = "NA", drug = "NA", mut = "NA") {
+  library(bio3d)
+  protein.code = c(noDrug, drug, mut)
+  for (id in protein.code) {
+    s <- read.pdb(id)
+    s.chainA <- trim.pdb(s, chain="A", elety="CA")
+    s.b <- s.chainA$atom$b
+    plotb3(s.b, sse=s.chainA, typ="l", ylab="Bfactor")
+  }
+}
+
+plotBfactor("4AKE", "1AKE", "1E4Y")
+
+```
+
+
+
