@@ -1,0 +1,24 @@
+---
+title: "Machine Learning 1"
+author: 'Shitian Li (PID: A13294481)'
+date: "10/22/2021"
+output: pdf_document
+---
+
+# Clustering methods
+
+Kmeansclustering in R is done with the `kmeans()` function.  
+Here we make up some data to test and learn with. 
+
+```{r}
+tmp <- c(rnorm(30, 3), rnorm(30, -3))
+data <- cbind(tmp, rev(tmp))
+plot(data)
+```
+
+
+
+
+
+
+
