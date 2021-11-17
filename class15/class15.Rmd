@@ -1,0 +1,277 @@
+---
+title: "Class 15"
+author: 'Shitian Li (PID: A13294481)'
+date: "11/17/2021"
+output: pdf_document
+---
+
+# background
+
+Today we examine a published RNA-seqexperiment where airway smooth muscle cells were treated with 
+
+```{r include=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+We need 2 things:  
+-1: count data   
+-2: colData (the metadata that tells us about the deign of the experiment)  
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", row.names=1)
+metadata <-  read.csv("airway_metadata.csv")
+```
+
+```{r}
+head(counts)
+```
+
+```{r}
+head(metadata)
+```
+
+Side note:  
+Let's check the correspondence of the metadata and count data setup. 
+
+```{r}
+all(metadata$id == colnames(counts))
+```
+
+# Compare control to treated
+
+First, we need to access all the countrol columns in our counts data. 
+
+```{r}
+control.inds <- metadata$dex == "control"
+control.ids <- metadata[control.inds,]$id
+```
+
+Use these ids to access just the control columns f our `counts` data
+
+```{r}
+control.mean <- rowMeans(counts[ ,control.ids])
+head(counts[ , control.ids])
+```
+
+Now do same for treat: 
+
+```{r}
+treat.inds <- !control.inds
+treat.ids <- metadata[treat.inds,]$id
+treat.mean <- rowMeans(counts[ ,treat.ids])
+head(counts[ , treat.ids])
+```
+
+For book keeping, let's combine these into a new dataset. 
+
+```{r}
+meancounts <- data.frame(control.mean, treat.mean)
+```
+
+There are `r nrow(counts)` rows/genes in this dataset. 
+
+```{r}
+nrow(counts)
+nrow(meancounts)
+```
+
+# Compare the control and treated: 
+
+Let's do a quick plot: 
+
+```{r}
+plot(meancounts$control.mean, meancounts$treat.mean)
+```
+
+Let's put on a log scale: 
+
+```{r}
+plot(meancounts$control.mean, meancounts$treat.mean, log="xy")
+```
+
+We often use log transformations as they make life much nicer in this world...
+
+```{r}
+log2(20/20)
+```
+
+```{r}
+log2(40/20)
+```
+
+```{r}
+log2(10/20)
+```
+
+```{r}
+log2(80/20)
+```
+
+```{r}
+meancounts$log2fc <- log2(meancounts[,"treat.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+```
+
+Remove those with inf and NaN. 
+
+```{r}
+zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
+
+to.rm <- unique(zero.vals[,1])
+mycounts <- meancounts[-to.rm,]
+head(mycounts)
+```
+
+We now have   `r nrow(mycounts)` gene remaining: 
+
+```{r}
+nrow(mycounts)
+```
+
+How many of these genes are up regulated at the log2 fold-change threshold of +2 or greater? 
+
+```{r}
+sum(mycounts$log2fc > +2)
+```
+
+What percentage is this? 
+
+```{r}
+round((sum(mycounts$log2fc > +2) / nrow(mycounts)) * 100, 2)
+```
+
+```{r}
+sum(mycounts$log2fc < -2)
+```
+
+# DEseq2
+
+```{r include=F}
+library(DESeq2)
+```
+
+```{r}
+citation("DESeq2")
+```
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex)
+dds
+```
+ 
+Run the DESeq analysis: 
+
+```{r}
+dds <- DESeq(dds)
+```
+
+Get the results: 
+
+```{r}
+res <- results(dds)
+res
+```
+
+Let's take a look at the summary of results: 
+
+```{r}
+summary(res)
+```
+
+Change the p-value to 0.05 from the 0.1 default: 
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+# A volcano plot
+
+This is a very common data viz of this type of data that does not really look like a volcano. 
+
+```{r}
+plot( res$log2FoldChange,  -log(res$padj), 
+      xlab="Log2(FoldChange)",
+      ylab="-Log(P-value)")
+```
+
+```{r}
+plot( res$log2FoldChange,  -log(res$padj), 
+ ylab="-Log(P-value)", xlab="Log2(FoldChange)")
+
+# Add some cut-off lines
+abline(v=c(-2,2), col="darkgray", lty=2)
+abline(h=-log(0.05), col="darkgray", lty=2)
+```
+
+```{r}
+# Setup our custom point color vector 
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "red" 
+
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "blue"
+
+# Volcano plot with custom colors 
+plot( res$log2FoldChange,  -log(res$padj), 
+ col=mycols, ylab="-Log(P-value)", xlab="Log2(FoldChange)" )
+
+# Cut-off lines
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.1), col="gray", lty=2)
+```
+
+```{r include=FALSE}
+library(EnhancedVolcano)
+```
+
+# Now let's add in some labels: 
+
+```{r include=FALSE}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+
+```{r}
+columns(org.Hs.eg.db)
+```
+
+```{r}
+res$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(res), # Our genenames
+                     keytype="ENSEMBL",        # The format of our genenames
+                     column="SYMBOL",          # The new format we want to add
+                     multiVals="first")
+```
+
+```{r}
+ord <- order( res$padj )
+#View(res[ord,])
+head(res[ord,])
+```
+
+Store the data: 
+
+```{r}
+write.csv(res[ord,], "deseq_results.csv")
+```
+
+And then do enhanced volcano plot: 
+
+```{r}
+x <- as.data.frame(res)
+
+EnhancedVolcano(x,
+    lab = x$symbol,
+    x = 'log2FoldChange',
+    y = 'pvalue')
+```
+
+
+
+
+
+
