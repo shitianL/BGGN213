@@ -1,0 +1,31 @@
+---
+title: 'Class 13: AWS'
+author: 'Shitian Li (PID: A13294481)'
+date: "11/10/2021"
+output: html_document
+---
+
+Load the file: 
+
+```{r}
+mm.second.x.zebrafish <- read.delim("~/work/mm-second.x.zebrafish.tsv", header=FALSE)
+colnames(mm.second.x.zebrafish) <- c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore")
+```
+
+Create a histogram: 
+
+```{r}
+library(ggplot2)
+ggplot(mm.second.x.zebrafish, aes(bitscore)) + 
+  geom_histogram(bins = 30)
+```
+
+```{r}
+ggplot(mm.second.x.zebrafish, aes(pident, bitscore)) + geom_point(alpha=0.1) 
+```
+
+```{r}
+ggplot(mm.second.x.zebrafish, aes((mm.second.x.zebrafish$pident * (mm.second.x.zebrafish$qend - mm.second.x.zebrafish$qstart)), bitscore)) + geom_point(alpha=0.1) + geom_smooth()
+
+```
+
