@@ -7,16 +7,16 @@ output: pdf_document
 
 # background
 
-Today we examine a published RNA-seqexperiment where airway smooth muscle cells were treated with 
+Today we examine a published RNA-seqexperiment where airway smooth muscle cells were treated with
 
 ```{r include=FALSE}
 library(dplyr)
 library(ggplot2)
 ```
 
-We need 2 things:  
--1: count data   
--2: colData (the metadata that tells us about the deign of the experiment)  
+We need 2 things:\
+-1: count data\
+-2: colData (the metadata that tells us about the deign of the experiment)
 
 ```{r}
 counts <- read.csv("airway_scaledcounts.csv", row.names=1)
@@ -31,8 +31,8 @@ head(counts)
 head(metadata)
 ```
 
-Side note:  
-Let's check the correspondence of the metadata and count data setup. 
+Side note:\
+Let's check the correspondence of the metadata and count data setup.
 
 ```{r}
 all(metadata$id == colnames(counts))
@@ -40,7 +40,7 @@ all(metadata$id == colnames(counts))
 
 # Compare control to treated
 
-First, we need to access all the countrol columns in our counts data. 
+First, we need to access all the countrol columns in our counts data.
 
 ```{r}
 control.inds <- metadata$dex == "control"
@@ -54,7 +54,7 @@ control.mean <- rowMeans(counts[ ,control.ids])
 head(counts[ , control.ids])
 ```
 
-Now do same for treat: 
+Now do same for treat:
 
 ```{r}
 treat.inds <- !control.inds
@@ -63,28 +63,28 @@ treat.mean <- rowMeans(counts[ ,treat.ids])
 head(counts[ , treat.ids])
 ```
 
-For book keeping, let's combine these into a new dataset. 
+For book keeping, let's combine these into a new dataset.
 
 ```{r}
 meancounts <- data.frame(control.mean, treat.mean)
 ```
 
-There are `r nrow(counts)` rows/genes in this dataset. 
+There are `r nrow(counts)` rows/genes in this dataset.
 
 ```{r}
 nrow(counts)
 nrow(meancounts)
 ```
 
-# Compare the control and treated: 
+# Compare the control and treated:
 
-Let's do a quick plot: 
+Let's do a quick plot:
 
 ```{r}
 plot(meancounts$control.mean, meancounts$treat.mean)
 ```
 
-Let's put on a log scale: 
+Let's put on a log scale:
 
 ```{r}
 plot(meancounts$control.mean, meancounts$treat.mean, log="xy")
@@ -113,7 +113,7 @@ meancounts$log2fc <- log2(meancounts[,"treat.mean"]/meancounts[,"control.mean"])
 head(meancounts)
 ```
 
-Remove those with inf and NaN. 
+Remove those with inf and NaN.
 
 ```{r}
 zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
@@ -123,19 +123,19 @@ mycounts <- meancounts[-to.rm,]
 head(mycounts)
 ```
 
-We now have   `r nrow(mycounts)` gene remaining: 
+We now have `r nrow(mycounts)` gene remaining:
 
 ```{r}
 nrow(mycounts)
 ```
 
-How many of these genes are up regulated at the log2 fold-change threshold of +2 or greater? 
+How many of these genes are up regulated at the log2 fold-change threshold of +2 or greater?
 
 ```{r}
 sum(mycounts$log2fc > +2)
 ```
 
-What percentage is this? 
+What percentage is this?
 
 ```{r}
 round((sum(mycounts$log2fc > +2) / nrow(mycounts)) * 100, 2)
@@ -161,27 +161,27 @@ dds <- DESeqDataSetFromMatrix(countData=counts,
                               design=~dex)
 dds
 ```
- 
-Run the DESeq analysis: 
+
+Run the DESeq analysis:
 
 ```{r}
 dds <- DESeq(dds)
 ```
 
-Get the results: 
+Get the results:
 
 ```{r}
 res <- results(dds)
 res
 ```
 
-Let's take a look at the summary of results: 
+Let's take a look at the summary of results:
 
 ```{r}
 summary(res)
 ```
 
-Change the p-value to 0.05 from the 0.1 default: 
+Change the p-value to 0.05 from the 0.1 default:
 
 ```{r}
 res05 <- results(dds, alpha=0.05)
@@ -190,7 +190,7 @@ summary(res05)
 
 # A volcano plot
 
-This is a very common data viz of this type of data that does not really look like a volcano. 
+This is a very common data viz of this type of data that does not really look like a volcano.
 
 ```{r}
 plot( res$log2FoldChange,  -log(res$padj), 
@@ -228,7 +228,7 @@ abline(h=-log(0.1), col="gray", lty=2)
 library(EnhancedVolcano)
 ```
 
-# Now let's add in some labels: 
+# Now let's add in some labels:
 
 ```{r include=FALSE}
 library("AnnotationDbi")
@@ -253,15 +253,15 @@ ord <- order( res$padj )
 head(res[ord,])
 ```
 
-Store the data: 
+Store the data:
 
 ```{r}
 write.csv(res[ord,], "deseq_results.csv")
 ```
 
-And then do enhanced volcano plot: 
+And then do enhanced volcano plot:
 
-```{r}
+```{r fig.height=6}
 x <- as.data.frame(res)
 
 EnhancedVolcano(x,
@@ -270,8 +270,53 @@ EnhancedVolcano(x,
     y = 'pvalue')
 ```
 
+```{r}
+library(pathview)
+library(gage)
+library(gageData)
+```
 
+```{r}
+data(kegg.sets.hs)
+```
 
+Before we can use KEGG we need to get our gene identifiers in the correct foramt for KEGG\< which is ENTREZ format in this case.
 
+```{r}
+res$entrez <- mapIds(org.Hs.eg.db,
+                     keys=row.names(res), # Our genenames
+                     keytype="ENSEMBL",        # The format of our genenames
+                     column="ENTREZID",          # The new format we want to add
+                     multiVals="first")
 
+res$genename <- mapIds(org.Hs.eg.db,
+                     keys=row.names(res), # Our genenames
+                     keytype="ENSEMBL",        # The format of our genenames
+                     column="GENENAME",          # The new format we want to add
+                     multiVals="first")
+```
 
+```{r}
+foldchanges = res$log2FoldChange
+names(foldchanges) = res$entrez
+head(foldchanges)
+```
+
+```{r}
+keggres <- gage(foldchanges, gsets=kegg.sets.hs)
+```
+
+```{r}
+attributes(keggres)
+```
+
+```{r}
+# Look at the first three down (less) pathways
+head(keggres$less, 3)
+```
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa05310")
+```
+
+![](hsa05310.pathview.png)
