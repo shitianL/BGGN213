@@ -1,3 +1,11 @@
+#' ---
+#' title: 'Class 05: Data Visualization'
+#' author: 'Shitian Li (PID: A13294481)'
+#' date: "12/3/2021"
+#' output: github_document
+#' ---
+
+
 # Class 05: Data Visualization 
 # Trying the ggplot2 package
 
@@ -52,8 +60,8 @@ ggplot(gapminder, aes(year, lifeExp, col=continent)) +
 
 # install the plotly
 # install.packages("plotly")
-library(plotly)
-ggplotly()
+# library(plotly)
+# ggplotly()
 
 
 
