@@ -9,3 +9,4 @@ Nice to meet you all!
 6. R Functions  
 7. Something Else  
 8. 
+9. Haloween Candy Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class09_mini_project/mini_project.Rmd)
