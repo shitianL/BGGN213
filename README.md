@@ -4,11 +4,12 @@ Nice to meet you all!
 
 ## Contents: 
 
-4. Introduction to R  
-5. Data Visualization with `ggplot2`  
-6. R Functions  
-7. Something Else  
-8. 
-9. Haloween Candy Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class09_mini_project/mini_project.Rmd)  
-...  
-17. COVID-19 Vaccine Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class17/class17.Rmd)
+- Class 4: Introduction to R  
+- Class 5: Data Visualization with `ggplot2`  
+- Class 6: R Functions  
+- Class 7: Something Else  
+- Class 8: 
+- Class 9: Haloween Candy Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class09_mini_project/mini_project.Rmd)  
+- Class 10: 
+...
+- Class 17: COVID-19 Vaccine Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class17/class17.Rmd)
