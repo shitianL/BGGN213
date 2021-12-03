@@ -5,7 +5,7 @@ Nice to meet you all!
 ## Contents: 
 
 - Class 4: Introduction to R  
-- Class 5: Data Visualization with `ggplot2`  
+- Class 5: [Data Visualization with `ggplot2`](https://github.com/shitianL/BGGN213/blob/main/class05/class05.md)    
 - Class 6: R Functions  
 - Class 7: Something Else  
 - Class 8: 
