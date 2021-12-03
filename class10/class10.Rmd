@@ -2,9 +2,7 @@
 title: "Class 10: Halloween Project"
 author: 'Shitian Li (PID: A13294481)'
 date: "10/31/2021"
-output: 
-  pdf_document:
-    latex_engine: xelatex
+output: github_document
 always_allow_html: true
 ---
 

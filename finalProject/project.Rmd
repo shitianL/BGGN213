@@ -1,0 +1,40 @@
+---
+title: "script"
+author: 'Shitian Li (PID: A13294481)'
+date: "12/2/2021"
+output: html_document
+---
+
+```{r include=FALSE}
+library(bio3d)
+library(tidyverse)
+```
+
+```{r}
+seq <- read.fasta('sample.fasta')
+dat <- seqidentity(seq)
+```
+
+```{r}
+heatmap(dat, margins=c(8,8))
+```
+
+```{r}
+seq <- "MKPSGGIPSVSDSVGASIASVAMGGDLKMPGGMGGDLHHPAIAVGPNKTHATGSMSHHLPTAANAKTKGGKGRGPGKAATTNTTNKRPKANSRSAGTKKKNASSQPPPITFDSEDEDNAKPMFYDEKRQLSLDINKLPGDKLGRVVHIIQSREPSLRDSNPDEIEIDFETLKPST"
+```
+
+```{r}
+blst.result <- blast.pdb(seq)
+```
+
+```{r}
+result <- blst.result$hit.tbl
+id <- result$subjectids[8:10]
+anno <- pdb.annotate(id)
+```
+
+```{r}
+pdb.file <- get.pdb(id[1])
+```
+
+
