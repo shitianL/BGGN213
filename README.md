@@ -4,8 +4,8 @@ Nice to meet you all!
 
 ## Contents: 
 
-- 04. Introduction to R  
-- 05. Data Visualization with `ggplot2`  
-- 06. R Functions  
-- 07. Something Else  
-- 08. 
+4. Introduction to R  
+5. Data Visualization with `ggplot2`  
+6. R Functions  
+7. Something Else  
+8. 
