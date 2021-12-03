@@ -9,7 +9,7 @@ Nice to meet you all!
 - Class 6: R Functions  
 - Class 7: Something Else  
 - Class 8: 
-- Class 9: Haloween Candy Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class09_mini_project/mini_project.Rmd)  
-- Class 10:  
+- Class 9:   
+- Class 10:  Haloween Candy [Analysis](https://github.com/shitianL/BGGN213/blob/main/class10/class10.md) [Source](https://github.com/shitianL/BGGN213/blob/main/class09_mini_project/mini_project.Rmd)  
 ...  
 - Class 17: COVID-19 Vaccine Analysis [Source](https://github.com/shitianL/BGGN213/blob/main/class17/class17.Rmd)
