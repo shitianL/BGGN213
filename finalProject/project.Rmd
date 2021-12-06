@@ -27,14 +27,6 @@ seq <- "MKPSGGIPSVSDSVGASIASVAMGGDLKMPGGMGGDLHHPAIAVGPNKTHATGSMSHHLPTAANAKTKGGKG
 blst.result <- blast.pdb(seq)
 ```
 
-```{r}
-result <- blst.result$hit.tbl
-id <- result$subjectids[8:10]
-anno <- pdb.annotate(id)
-```
 
-```{r}
-pdb.file <- get.pdb(id[1])
-```
 
 
