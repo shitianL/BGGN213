@@ -1,0 +1,46 @@
+---
+title: "1st Year Exam Q15"
+author: 'Shitian Li (PID: A13294481)'
+date: "7/14/2022"
+output: pdf_document
+---
+
+Import the CSV file into R: 
+
+```{r}
+data <- read.csv("covid19_variants.csv")
+```
+
+Inspect the data: 
+
+```{r}
+head(data)
+```
+
+Import ggplot2 and dplyr: 
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(scales)
+```
+
+Trim out other and total: 
+
+```{r}
+trim_dat <- data %>%
+  filter(variant_name != "Other") %>%
+  filter(variant_name != "Total")
+```
+
+```{r}
+ggplot(trim_dat, aes(x=as.Date(date), y=percentage, group=variant_name, col=variant_name)) + 
+  geom_line() + 
+  theme(legend.title=element_blank()) + 
+  xlab("") + 
+  ylab("Percentage of Sequenced Specimens") + 
+  ggtitle("COVID-19 Variants in California") + 
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 months") + 
+  theme(axis.text.x = element_text(angle=45, hjust = 1))
+```
+
