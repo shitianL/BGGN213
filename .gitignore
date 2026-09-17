@@ -1,4 +1,17 @@
+# R
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# rmarkdown / knitr artifacts
+*_files/
+*_cache/
+
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+*.swp
